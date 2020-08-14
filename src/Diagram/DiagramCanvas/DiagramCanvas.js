@@ -54,4 +54,4 @@ DiagramCanvas.defaultProps = {
 };
 
 
-export default React.memo(DiagramCanvas);
+export default React.memo(DiagramCanvas, isEqual);

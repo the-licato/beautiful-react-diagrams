@@ -7,6 +7,7 @@ import { usePortRegistration, useNodeRegistration } from '../../shared/hooks/use
 import { PortType } from '../../shared/types/Types';
 import portGenerator from './portGenerator';
 import useDrag from '../../shared/hooks/useDrag';
+import isEqual from 'lodash/isEqual';
 
 /**
  * A Diagram Node component displays a single diagram node, handles the drag n drop business logic and fires the
@@ -50,8 +51,15 @@ const DiagramNode = (props) => {
   const OutputPorts = outputs.map(portGenerator(options, 'output'));
   const customRenderProps = { id, render, content, type, inputs: InputPorts, outputs: OutputPorts, data, className };
 
+  const selectThis = (node) => {
+    console.log("click")
+  }
+  const doubleClick = (node) => {
+    console.log("double click")
+  }
+
   return (
-    <div className={classList} ref={ref} style={getDiagramNodeStyle(coordinates)}>
+    <div className={classList} ref={ref} style={getDiagramNodeStyle(coordinates)} onClick={selectThis} onDoubleClick={doubleClick}>
       {render && typeof render === 'function' && (<CustomRenderer {...customRenderProps} />)}
       {!render && (
         <>
@@ -150,4 +158,4 @@ DiagramNode.defaultProps = {
   className: '',
 };
 
-export default React.memo(DiagramNode);
+export default React.memo(DiagramNode, isEqual);

@@ -9,6 +9,7 @@ import makeSvgPath from '../../shared/functions/makeSvgPath';
 import getPathMidpoint from '../../shared/functions/getPathMidpoint';
 import useNodeRefs from '../../shared/hooks/useNodeRefs';
 import LinkLabel from './LinkLabel';
+import isEqual from 'lodash/isEqual';
 
 // local hook, returns portRefs & nodeRefs
 const useContextRefs = () => {
@@ -79,4 +80,4 @@ Link.defaultProps = {
   onDelete: undefined,
 };
 
-export default React.memo(Link);
+export default React.memo(Link, isEqual);

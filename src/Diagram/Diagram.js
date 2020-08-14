@@ -48,8 +48,12 @@ const Diagram = (props) => {
   // when a segment connects, update the links schema, perform the onChange callback
   // with the new data, then reset the segment state
   const onSegmentConnect = useCallback((input, output) => {
-    const nextLinks = [...(schema.links || []), { input, output }];
-    onChange({ ...schema, links: nextLinks });
+    const checkLink = schema.links.find(link => link.input == input && link.output == output)
+    const checkInverseLink = schema.links.find(link => link.input == output && link.output == input)
+    if(checkLink === undefined && checkInverseLink === undefined){
+      const nextLinks = [...(schema.links || []), { input, output }];
+      onChange({ ...schema, links: nextLinks });
+    }
     setSegment(undefined);
   }, [schema, onChange]);
 

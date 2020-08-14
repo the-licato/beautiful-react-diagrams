@@ -2,6 +2,7 @@ import React, { useMemo } from 'react';
 import PropTypes from 'prop-types';
 import { PortAlignment } from '../../shared/types/Types';
 import makeSvgPath from '../../shared/functions/makeSvgPath';
+import isEqual from 'lodash/isEqual';
 
 /**
  * Segment
@@ -29,4 +30,4 @@ Segment.defaultProps = {
   alignment: undefined,
 };
 
-export default React.memo(Segment);
+export default React.memo(Segment, isEqual);

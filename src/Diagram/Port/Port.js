@@ -3,6 +3,8 @@ import PropTypes from 'prop-types';
 import useDrag from '../../shared/hooks/useDrag';
 import useCanvas from '../../shared/hooks/useCanvas';
 import getRelativePoint from '../../shared/functions/getRelativePoint';
+import isEqual from 'lodash/isEqual';
+import { isEqualWith } from 'lodash';
 
 /**
  * Port
@@ -68,4 +70,4 @@ Port.defaultProps = {
   alignment: undefined,
 };
 
-export default React.memo(Port);
+export default React.memo(Port, isEqual);

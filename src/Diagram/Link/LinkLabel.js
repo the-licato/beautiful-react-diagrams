@@ -1,5 +1,6 @@
 import React from 'react';
 import PropTypes from 'prop-types';
+import isEqual from 'lodash/isEqual';
 
 /**
  * Diagram link label
@@ -17,4 +18,4 @@ LinkLabel.propTypes = {
   position: PropTypes.arrayOf(PropTypes.number).isRequired,
 };
 
-export default React.memo(LinkLabel);
+export default React.memo(LinkLabel, isEqual);

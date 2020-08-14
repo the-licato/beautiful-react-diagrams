@@ -5,6 +5,8 @@ import Segment from '../Segment/Segment';
 import { LinkType, NodeType, PortAlignment } from '../../shared/types/Types';
 import findInvolvedEntity from './findInvolvedEntity';
 import removeLinkFromArray from './removeLinkFromArray';
+import isEqual from 'lodash/isEqual';
+import { isEqualWith } from 'lodash';
 
 /**
  * Handles the links' events and business logic, wraps the links within a svg
@@ -18,6 +20,7 @@ const LinksCanvas = (props) => {
       onChange(nextLinks);
     }
   }, [links, onChange]);
+
 
   return (
     <svg className="bi bi-link-canvas-layer">
@@ -56,4 +59,4 @@ LinksCanvas.defaultProps = {
   onChange: undefined,
 };
 
-export default React.memo(LinksCanvas);
+export default React.memo(LinksCanvas, isEqual);
