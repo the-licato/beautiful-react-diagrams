@@ -17,7 +17,7 @@ import isEqual from 'lodash/isEqual';
 const DiagramNode = (props) => {
   const {
     id, content, coordinates, type, inputs, outputs, data, onPositionChange, onPortRegister, onDragNewSegment, onMount,
-    onSegmentFail, onSegmentConnect, render, className,
+    onClick, onDoubleClick, onSegmentFail, onSegmentConnect, render, className,
   } = props;
   const registerPort = usePortRegistration(inputs, outputs, onPortRegister); // get the port registration method
   const { ref, onDragStart, onDrag } = useDrag({ throttleBy: 14 }); // get the drag n drop methods
@@ -51,15 +51,8 @@ const DiagramNode = (props) => {
   const OutputPorts = outputs.map(portGenerator(options, 'output'));
   const customRenderProps = { id, render, content, type, inputs: InputPorts, outputs: OutputPorts, data, className };
 
-  const selectThis = (node) => {
-    console.log("click")
-  }
-  const doubleClick = (node) => {
-    console.log("double click")
-  }
-
   return (
-    <div className={classList} ref={ref} style={getDiagramNodeStyle(coordinates)} onClick={selectThis} onDoubleClick={doubleClick}>
+    <div className={classList} ref={ref} style={getDiagramNodeStyle(coordinates)} onClick={onClick} onDoubleClick={onDoubleClick}>
       {render && typeof render === 'function' && (<CustomRenderer {...customRenderProps} />)}
       {!render && (
         <>

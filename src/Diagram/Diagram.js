@@ -15,7 +15,7 @@ import './diagram.scss';
  * with the user.
  */
 const Diagram = (props) => {
-  const { schema, onChange, ...rest } = props;
+  const { schema, onChange, onClick, onDoubleClick, ...rest } = props;
   const [segment, setSegment] = useState();
   const { current: portRefs } = useRef({}); // keeps the port elements references
   const { current: nodeRefs } = useRef({}); // keeps the node elements references
@@ -72,6 +72,8 @@ const Diagram = (props) => {
         onDragNewSegment={onDragNewSegment}
         onSegmentFail={onSegmentFail}
         onSegmentConnect={onSegmentConnect}
+        onClick={onClick}
+        onDoubleClick={onDoubleClick}
       />
       <LinksCanvas
         nodes={schema.nodes}
