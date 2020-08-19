@@ -10,8 +10,9 @@ import DiagramContext from '../../Context/DiagramContext';
  * The context contains the canvas bounding box (for future calculations) and the port references in order to
  * allow links to easily access to a the ports coordinates
  */
+
 const DiagramCanvas = (props) => {
-  const { children, portRefs, nodeRefs, className, ...rest } = props;
+  const { id, children, portRefs, nodeRefs, className, ...rest } = props;
   const [bbox, setBoundingBox] = useState(null);
   const canvasRef = useRef();
   const classList = classNames('bi bi-diagram', className);
@@ -32,11 +33,28 @@ const DiagramCanvas = (props) => {
   // same on window scroll
   useWindowScroll(() => calculateBBox(canvasRef.current));
 
+  const gridLines = (
+    <svg width="100%" height="100%" xmlns="http://www.w3.org/2000/svg">
+      <defs>
+        <pattern id={"smallGrid-"+id} width="8" height="8" patternUnits="userSpaceOnUse">
+          <path d="M 8 0 L 0 0 0 8" fill="none" stroke="gray" stroke-width="0.5"/>
+        </pattern>
+        <pattern id={"grid-"+id} width="80" height="80" patternUnits="userSpaceOnUse">
+          <rect width="80" height="80" fill={"url(#smallGrid-"+id+")"}/>
+          <path d="M 80 0 L 0 0 0 80" fill="none" stroke="gray" stroke-width="1"/>
+        </pattern>
+      </defs>
+      <rect width="100%" height="100%" fill={"url(#grid-"+id+")"} />
+    </svg>
+  )
+
   return (
-    <div className={classList} ref={canvasRef} {...rest}>
+    <div className={classList} id={id} ref={canvasRef} {...rest}>
       <DiagramContext.Provider value={{ canvas: bbox, ports: portRefs, nodes: nodeRefs }}>
         {children}
       </DiagramContext.Provider>
+      {gridLines}
+
     </div>
   );
 };

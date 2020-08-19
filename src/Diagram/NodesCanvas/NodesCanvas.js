@@ -9,7 +9,7 @@ import updateNodeCoordinates from './updateNodeCoordinates';
  * Handles the nodes' events and business logic
  */
 const NodesCanvas = (props) => {
-  const { nodes, onPortRegister, onNodeRegister, onDragNewSegment, onSegmentFail, onSegmentConnect, onChange, onClick, onDoubleClick } = props;
+  const { nodes, flow, onPortRegister, onNodeRegister, onDragNewSegment, onSegmentFail, onSegmentConnect, onChange, onDoubleClick, selectedID, changeSelectedID } = props;
 
   // when a node item update its position updates it within the nodes array
   const onNodePositionChange = useCallback((nodeId, newCoordinates) => {
@@ -28,9 +28,11 @@ const NodesCanvas = (props) => {
       onSegmentFail={onSegmentFail}
       onSegmentConnect={onSegmentConnect}
       onMount={onNodeRegister}
-      onClick={onClick}
       onDoubleClick={onDoubleClick}
+      selectedID={selectedID}
+      changeSelectedID={changeSelectedID}
       key={node.id}
+      flow={flow}
     />
   ));
 };

@@ -17,7 +17,7 @@ import isEqual from 'lodash/isEqual';
 const DiagramNode = (props) => {
   const {
     id, content, coordinates, type, inputs, outputs, data, onPositionChange, onPortRegister, onDragNewSegment, onMount,
-    onClick, onDoubleClick, onSegmentFail, onSegmentConnect, render, className,
+    onDoubleClick, selectedID, changeSelectedID, onSegmentFail, onSegmentConnect, render, className, flow
   } = props;
   const registerPort = usePortRegistration(inputs, outputs, onPortRegister); // get the port registration method
   const { ref, onDragStart, onDrag } = useDrag({ throttleBy: 14 }); // get the drag n drop methods
@@ -33,16 +33,44 @@ const DiagramNode = (props) => {
     if (onPositionChange) {
       event.stopImmediatePropagation();
       event.stopPropagation();
-      const nextCoords = [dragStartPoint.current[0] - info.offset[0], dragStartPoint.current[1] - info.offset[1]];
+      const maxWidth = document.getElementById(flow).offsetWidth;
+      const maxHeight = document.getElementById(flow).offsetHeight
+      let nextX = dragStartPoint.current[0] - info.offset[0]
+      let nextY = dragStartPoint.current[1] - info.offset[1]
+      
+      //Check if outside boundaries
+      if (nextX < 0){
+        nextX = 0
+      }
+      else if (nextX > maxWidth){
+        nextX = maxWidth
+      }
+
+      if (nextY < 0 ){
+        nextY = 0
+      }
+      else if (nextY > maxHeight){
+        nextY = maxHeight
+      }
+
+      const nextCoords = [nextX, nextY];
       onPositionChange(id, nextCoords);
     }
   });
+
+  const onClickHandler = (ev) => {
+    ev.stopPropagation();
+    //Click event in DiagramNode
+    const clickedNodeID = ev.currentTarget.classList[3].substring(11)
+    changeSelectedID(clickedNodeID)
+  }
+  const selected = selectedID === id ? ' bi-node-selected' : ''
 
   // perform the onMount callback when the note is allowed to register
   useNodeRegistration(ref, onMount, id);
 
   const classList = useMemo(() => classNames('bi bi-diagram-node', {
-    [`bi-diagram-node-${type}`]: !!type && !render,
+    [`bi-diagram-node-${type} bi-node-id-${id}`]: !!type && !render,
   }, className), [type, className]);
 
   // generate ports
@@ -52,7 +80,7 @@ const DiagramNode = (props) => {
   const customRenderProps = { id, render, content, type, inputs: InputPorts, outputs: OutputPorts, data, className };
 
   return (
-    <div className={classList} ref={ref} style={getDiagramNodeStyle(coordinates)} onClick={onClick} onDoubleClick={onDoubleClick}>
+    <div className={classList+selected} ref={ref} style={getDiagramNodeStyle(coordinates)} onClick={onClickHandler} onDoubleClick={onDoubleClick}>
       {render && typeof render === 'function' && (<CustomRenderer {...customRenderProps} />)}
       {!render && (
         <>

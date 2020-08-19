@@ -6,6 +6,8 @@ import NodesCanvas from './NodesCanvas/NodesCanvas';
 import LinksCanvas from './LinksCanvas/LinksCanvas';
 import { LinkType, NodeType } from '../shared/types/Types';
 
+import PaletteCanvas from './Palette/PaletteCanvas';
+
 import './diagram.scss';
 
 /**
@@ -15,10 +17,11 @@ import './diagram.scss';
  * with the user.
  */
 const Diagram = (props) => {
-  const { schema, onChange, onClick, onDoubleClick, ...rest } = props;
+  const { id, key, schema, onChange, onDoubleClick, ...rest } = props;
   const [segment, setSegment] = useState();
   const { current: portRefs } = useRef({}); // keeps the port elements references
   const { current: nodeRefs } = useRef({}); // keeps the node elements references
+  const [ selectedID, setSelectedID ] = useState('');
 
   // when nodes change, performs the onChange callback with the new incoming data
   const onNodesChange = useCallback((nextNodes) => {
@@ -62,18 +65,58 @@ const Diagram = (props) => {
     onChange({ ...schema, links: nextLinks });
   }, [schema, onChange]);
 
+  const onClickHandler = () => {
+    //Click event in Diagram
+    setSelectedID('')
+  }
+
+  const handleKeyUp = (ev) => {
+    if (ev.key === "Delete" && selectedID !== ''){
+      console.log("Selected ID")
+      console.log(selectedID)
+      console.log("Nodes")
+      console.log(schema)
+      const index = schema.nodes.findIndex(node => node.id === selectedID)
+      //Checking if there is some link (if there is delete it)
+      if (schema.nodes[index].inputs){
+        console.log("Entered first if")
+        for (const input of schema.nodes[index].inputs){
+          console.log(input)
+          schema.links = schema.links.filter(link => input.id !== link.input && input.id !== link.output)
+        }
+      }
+      if (schema.nodes[index].outputs){
+        console.log("Entered second if")
+        for (const output of schema.nodes[index].outputs){
+          console.log(output)
+          schema.links = schema.links.filter(link => output.id !== link.input && output.id !== link.output)
+        }
+      }     
+      onLinkDelete(schema.links) 
+      schema.nodes.splice(index,1)
+      onNodesChange(schema.nodes)
+    }
+  }
+
   return (
-    <DiagramCanvas portRefs={portRefs} nodeRefs={nodeRefs} {...rest}>
+    <DiagramCanvas id={id} portRefs={portRefs} nodeRefs={nodeRefs} tabIndex={0} onKeyUp={handleKeyUp} onClick={onClickHandler} {...rest}>
+      <PaletteCanvas
+        nodes={schema.nodes}
+        flow={id}
+        onChange={onNodesChange}
+      />
       <NodesCanvas
         nodes={schema.nodes}
+        flow={id}
         onChange={onNodesChange}
         onNodeRegister={onNodeRegister}
         onPortRegister={onPortRegister}
         onDragNewSegment={onDragNewSegment}
         onSegmentFail={onSegmentFail}
         onSegmentConnect={onSegmentConnect}
-        onClick={onClick}
         onDoubleClick={onDoubleClick}
+        selectedID={selectedID}
+        changeSelectedID={setSelectedID}
       />
       <LinksCanvas
         nodes={schema.nodes}

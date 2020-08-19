@@ -7,6 +7,14 @@
   // ----------------------------
   // Diagram node general wrapper
   // ----------------------------
+  .bi.bi-diagram-palette{
+    width: 180px;
+    height: 100%;
+    position: absolute;
+    background: #fff;
+    border-right: 5px solid #073765;
+  }
+
   .bi.bi-diagram-node {
     box-sizing: content-box;
 
@@ -41,7 +49,7 @@
     // Default node
     // ----------------------------
     &.bi-diagram-node-default {
-      transition: box-shadow 0.25s ease-in-out, border 0.3s ease-out;
+      //transition: box-shadow 0.25s ease-in-out, border 0.3s ease-out;
 
       @apply border border-solid border-default-dark bg-default-light text-default-darker rounded shadow p-2;
 
@@ -53,6 +61,10 @@
         @apply -mx-2;
       }
     }
+  }
+
+  .bi-node-selected{
+    border: 3px solid #073765!important;
   }
 
   // ----------------------------
