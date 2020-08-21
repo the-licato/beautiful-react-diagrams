@@ -32,6 +32,9 @@ const Link = (props) => {
   const inputPoint = useMemo(() => getCoords(input, portRefs, nodeRefs, canvas), [input, portRefs, nodeRefs, canvas]);
   // eslint-disable-next-line max-len
   const outputPoint = useMemo(() => getCoords(output, portRefs, nodeRefs, canvas), [output, portRefs, nodeRefs, canvas]);
+
+
+
   const pathOptions = {
     type: (input.type === 'port' || output.type === 'port') ? 'bezier' : 'curve',
     inputAlignment: input.entity.alignment || null,

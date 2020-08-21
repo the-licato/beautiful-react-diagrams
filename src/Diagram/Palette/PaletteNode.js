@@ -1,19 +1,17 @@
 import React, { useRef, useState } from 'react'
 import getDiagramNodeStyle from '../DiagramNode/getDiagramNodeStyle';
 import CustomRenderer from '../DiagramNode/CustomRender';
-import { usePortRegistration, useNodeRegistration } from '../../shared/hooks/useContextRegistration';
 import useDrag from '../../shared/hooks/useDrag';
 import isEqual from 'lodash/isEqual';
 
 const PaletteNode = (props) =>{
-    const {id, type, content, flow, coordinates, onPositionChange, render} = props
+    const {type, content, flow, coordinates, onPositionChange, onNodeIncorrect, render} = props
     const { ref, onDragStart, onDrag, onDragEnd } = useDrag({ throttleBy: 14 }); // get the drag n drop methods
     const classList = "bi bi-diagram-node bi-diagram-node-default"
     const dragStartPoint = useRef(coordinates); // keeps the drag start point in a persistent reference
     const [newNodeId, setNewNodeId] = useState();
 
     onDragStart(() => {
-        console.log("OnDragStart")
         dragStartPoint.current = coordinates;
         //Spawn a new node in the editor and start dragging it
         setNewNodeId(Math.random().toString(36).substring(2));
@@ -21,8 +19,7 @@ const PaletteNode = (props) =>{
     
       // whilst dragging calculates the next coordinates and perform the `onPositionChange` callback
       onDrag((event, info) => {
-        console.log("onDrag")
-        if (onPositionChange) {
+        if (onPositionChange && info.offset) {
           event.stopImmediatePropagation();
           event.stopPropagation();
           const maxWidth = document.getElementById(flow).offsetWidth;
@@ -46,14 +43,20 @@ const PaletteNode = (props) =>{
           }
 
           const nextCoords = [nextX, nextY];
-          onPositionChange(id, newNodeId, nextCoords);
+          onPositionChange(type, newNodeId, nextCoords);
         }
       });
 
       onDragEnd((event,info) => {
-        console.log("onDragEnd")
-        console.log(event)
-        console.log(info)
+        if(info.offset){
+          let nextX = dragStartPoint.current[0] - info.offset[0]
+          if (nextX < 180) {
+            onNodeIncorrect(newNodeId)
+          }
+        }
+        else{
+          onNodeIncorrect(newNodeId)
+        }
       });
 
     return (

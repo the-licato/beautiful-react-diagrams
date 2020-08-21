@@ -38,6 +38,13 @@ const Diagram = (props) => {
     nodeRefs[nodeId] = nodeEl;
   }, [nodeRefs]);
 
+  const onNodeRemove = (nodeId, portsToRemove) => {
+    delete nodeRefs[nodeId]
+    for (const portId of portsToRemove){
+      delete portRefs[portId]
+    }
+  }
+
   // when a new segment is dragged, save it to the local state
   const onDragNewSegment = useCallback((portId, from, to, alignment) => {
     setSegment({ id: `segment-${portId}`, from, to, alignment });
@@ -72,29 +79,27 @@ const Diagram = (props) => {
 
   const handleKeyUp = (ev) => {
     if (ev.key === "Delete" && selectedID !== ''){
-      console.log("Selected ID")
-      console.log(selectedID)
-      console.log("Nodes")
-      console.log(schema)
       const index = schema.nodes.findIndex(node => node.id === selectedID)
+      let portsToRemove = []
+      
       //Checking if there is some link (if there is delete it)
       if (schema.nodes[index].inputs){
-        console.log("Entered first if")
         for (const input of schema.nodes[index].inputs){
-          console.log(input)
+          portsToRemove.push(input.id)
           schema.links = schema.links.filter(link => input.id !== link.input && input.id !== link.output)
         }
       }
       if (schema.nodes[index].outputs){
-        console.log("Entered second if")
         for (const output of schema.nodes[index].outputs){
-          console.log(output)
+          portsToRemove.push(output.id)
           schema.links = schema.links.filter(link => output.id !== link.input && output.id !== link.output)
         }
       }     
       onLinkDelete(schema.links) 
       schema.nodes.splice(index,1)
       onNodesChange(schema.nodes)
+      onNodeRemove(selectedID, portsToRemove)
+
     }
   }
 

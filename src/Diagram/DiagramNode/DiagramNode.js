@@ -39,8 +39,8 @@ const DiagramNode = (props) => {
       let nextY = dragStartPoint.current[1] - info.offset[1]
       
       //Check if outside boundaries
-      if (nextX < 0){
-        nextX = 0
+      if (nextX < 180){
+        nextX = 180
       }
       else if (nextX > maxWidth){
         nextX = maxWidth

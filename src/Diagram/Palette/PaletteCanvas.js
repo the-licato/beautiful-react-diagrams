@@ -1,48 +1,50 @@
-import React, { useCallback, useState, useEffect } from 'react'
+import React, { useCallback } from 'react'
 import PaletteNode from './PaletteNode'
 import updateNodeCoordinates from '../NodesCanvas/updateNodeCoordinates';
 import isEqual from 'lodash/isEqual';
 import cloneDeep from 'lodash/cloneDeep';
 import findIndex from 'lodash/findIndex';
-
-const types = [
-    {
-        data: {
-            type: 'inject',
-        },
-        content: 'Inject node',
-        coordinates: [0,0],
-        id: Math.random().toString(36).substring(2)
-    },
-    {
-        data: {
-            type: 'debug',
-        },
-        content: 'Debug node',
-        coordinates: [0,40],
-        id: Math.random().toString(36).substring(2)
-    }
-]
+import { types } from './PaletteTypes';
 
 const PaletteCanvas = (props) => {
     const {flow, nodes, onChange} = props
     
-    /*const [types, setTypes] = useState([])
+    /*
+    const [types, setTypes] = useState([])
 
     useEffect(() => {
-        setTypes(defaultTypes)
+        const nextTypes = Object.values(jsonTypes).map(type => {return type})
+        setTypes(nextTypes)
     }, [])
     */
 
     // when a node item update its position updates it within the nodes array
-    const onNodePositionChange = useCallback((typeId, nodeId, newCoordinates) => {
-        console.log("onNodePositionChange")
+    const onNodePositionChange = useCallback((type, nodeId, newCoordinates) => {
         if (onChange) {
             //deep clone
             let nextNodes = updateNodeCoordinates(nodeId, newCoordinates, nodes);
             //add new node
             if (findIndex(nodes, ['id', nodeId]) === -1){
-                let newNode = cloneDeep(types.find(type => type.id === typeId))
+                let newNode = cloneDeep(types.find(genericType => genericType.data.type === type))
+                const ports = nodes.map(node => {
+                    const outputs = node.outputs ? node.outputs.map(output => parseInt(output.id.substring(5))) : []
+                    const inputs = node.inputs ? node.inputs.map(input => parseInt(input.id.substring(5))) : []
+                    return [...outputs, ...inputs]
+                })
+                let currentPortId = ports.length > 0 ? Math.max(...ports)+1 : 0
+                if(newNode.outputs){
+                    for (const port in newNode.outputs){
+                        newNode.outputs[port].id = 'port-'+currentPortId.toString()
+                        currentPortId += 1
+                    }
+                }
+                if(newNode.inputs){
+                    for (const port in newNode.inputs){
+                        newNode.inputs[port].id = 'port-'+currentPortId.toString()
+                        currentPortId += 1
+                    }
+                }
+                
                 newNode.id = nodeId
                 newNode.coordinates = newCoordinates
                 nextNodes.push(newNode)
@@ -51,9 +53,15 @@ const PaletteCanvas = (props) => {
         }
     }, [nodes, onChange]);
 
+    const onNodeIncorrect = (nodeId) => {
+        const nextNodes = nodes.filter(node => node.id !== nodeId)
+        onChange(nextNodes)
+    }
+
     const availableNodes = types.map((type) => (
         <PaletteNode
             {...type}
+            onNodeIncorrect={onNodeIncorrect}
             onPositionChange={onNodePositionChange}
             flow={flow}
             type={type.data.type}
